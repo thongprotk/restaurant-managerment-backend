@@ -20,10 +20,10 @@ export class User {
     @Column({ length: 100, select: false, nullable: true })
     password: string;
 
-    @Column()
+    @Column({ nullable: true })
     firstName: string;
 
-    @Column()
+    @Column({ nullable: true })
     lastName: string;
 
     @Column({ nullable: true })

@@ -14,7 +14,7 @@ export class AuthController {
     @HttpCode(HttpStatus.CREATED)
     @Post('register')
     async register(@Body() body: AuthRegisterDto) {
-        return this.authService.registerWithRole(body.username, body.email, body.password, body.roles || ['customer']);
+        return this.authService.registerWithRole(body.username, body.firstName, body.lastName, body.email, body.password, body.roles || ['customer'], body.picture);
     }
 
     @HttpCode(HttpStatus.OK)

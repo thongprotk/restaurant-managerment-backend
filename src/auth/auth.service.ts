@@ -29,14 +29,16 @@ export class AuthService {
         return { accessToken };
     }
 
-    async registerWithRole(username: string, email: string, password: string, roles: string[]): Promise<Partial<User>> {
+    async registerWithRole(username: string, firstName: string, lastName: string, email: string, password: string, roles: string[], picture: string): Promise<Partial<User>> {
         const normalizedEmail = email.trim().toLowerCase();
+        const normalizedLastName = lastName?.trim();
+        const normalizedFirstName = firstName?.trim();
         const normalizedUsername = username.trim().toLowerCase();
         const existingUsername = await this.usersService.findOneByIdentifier(normalizedUsername).catch(() => undefined);
         if (existingUsername) throw new ConflictException('Username đã được đăng ký');
         const existing = await this.usersService.findOneByIdentifier(normalizedEmail).catch(() => undefined);
         if (existing) throw new ConflictException('Email đã được đăng ký');
-        const createUserDto = { email: normalizedEmail, password: password, roles: roles, username: normalizedUsername };
+        const createUserDto = { email: normalizedEmail, password: password, roles: roles, username: normalizedUsername, firstName: normalizedFirstName, lastName: normalizedLastName, picture: picture };
         try {
             const user = await this.usersService.create(createUserDto);
             return user;
