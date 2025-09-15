@@ -1,8 +1,16 @@
+import { IsISO8601, IsOptional, IsString } from "class-validator";
+
 export class UpdateGameDto {
-    name?: string;
+    @IsOptional() @IsString()
+    game_id?: string;
+    @IsOptional() @IsString()
+    game_name?: string;
+    @IsOptional() @IsString()
     slug?: string;
-    developer?: string;
-    platforms?: string[];
-    description?: string;
-    metadata?: Record<string, any>;
+    @IsOptional() @IsString()
+    guide_img?: string;
+    @IsOptional() @IsString()
+    icon_img?: string;
+    @IsOptional() @IsISO8601()
+    releaseDate?: string;
 }

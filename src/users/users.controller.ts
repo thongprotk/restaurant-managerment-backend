@@ -33,12 +33,12 @@ export class UsersController {
     }
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    findOne(@Param('id') id) {
         return this.usersService.findOne(id);
     }
 
     @Put(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto, @Req() req: any) {
+    async update(@Param('id') id, @Body() updateUserDto: UpdateUserDto, @Req() req: any) {
         const requester = req.user;
         // only admin or owner
         if (!requester?.roles?.includes('admin') && requester?.userId !== id) {
@@ -48,7 +48,7 @@ export class UsersController {
     }
 
     @Delete(':id')
-    async remove(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+    async remove(@Param('id') id, @Req() req: any) {
         const requester = req.user;
         if (!requester?.roles?.includes('admin') && requester?.userId !== id) {
             throw new ForbiddenException();

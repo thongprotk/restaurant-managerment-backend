@@ -4,7 +4,7 @@ import { Game } from '../games/game.entity';
 import { Comment } from '../comments/comment.entity';
 
 @Entity('issues')
-@Index(['gameId', 'status'])
+@Index(['game_id', 'status'])
 export class Issue {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -16,10 +16,11 @@ export class Issue {
     @JoinColumn({ name: 'userId' })
     user?: User;
 
-    @Column({ type: 'uuid', nullable: true })
-    gameId?: string;
+    @Column({ name: 'game_id', type: 'varchar', length: 200, nullable: true })
+    game_id?: string;
 
-    @ManyToOne(() => Game, (g) => g.issues, { nullable: true })
+    @ManyToOne(() => Game, { nullable: true })
+    @JoinColumn({ name: 'game_id', referencedColumnName: 'game_id' })
     game?: Game;
 
     @Column()

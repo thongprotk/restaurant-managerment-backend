@@ -44,14 +44,16 @@ export class UsersService {
         return this.sanitize(saved);
     }
 
-    // Lấy tất cả users (với pagination)
     async findAll(limit = 50, offset = 0): Promise<Partial<User>[]> {
-        const users = await this.usersRepository.find({ skip: offset, take: limit });
-        return users.map(u => this.sanitize(u));
+        try {
+            const users = await this.usersRepository.find({ skip: offset, take: limit });
+            return users.map(u => this.sanitize(u));
+        } catch (err) {
+            throw new BadRequestException('Error fetching users');
+        }
     }
 
-    // Lấy user theo ID
-    async findOne(id: number): Promise<Partial<User>> {
+    async findOne(id: string): Promise<Partial<User>> {
         const user = await this.usersRepository.findOne({ where: { id } });
         if (!user) {
             throw new NotFoundException(`User with ID ${id} not found`);
@@ -60,7 +62,7 @@ export class UsersService {
     }
 
     // Cập nhật user (admin or owner should check in controller/service caller)
-    async update(id: number, updateData: Partial<CreateUserDto>): Promise<Partial<User>> {
+    async update(id: string, updateData: Partial<CreateUserDto>): Promise<Partial<User>> {
         if ((updateData as any)?.password) {
             const salt = await bcrypt.genSalt(10);
             (updateData as any).password = await bcrypt.hash((updateData as any).password, salt);
@@ -70,7 +72,7 @@ export class UsersService {
     }
 
     // Xóa user
-    async remove(id: number): Promise<void> {
+    async remove(id: string): Promise<void> {
         const res = await this.usersRepository.delete(id);
         if (res.affected === 0) {
             throw new NotFoundException(`User with ID ${id} not found`);
@@ -78,7 +80,7 @@ export class UsersService {
     }
 
     // Optional: get user by id including password (for admin operations)
-    async findOneWithPassword(id: number): Promise<User> {
+    async findOneWithPassword(id: string): Promise<User> {
         const user = await this.usersRepository.createQueryBuilder('user')
             .addSelect('user.password')
             .where('user.id = :id', { id })
@@ -115,7 +117,7 @@ export class UsersService {
         return this.sanitize(saved);
     }
 
-    async saveRefreshToken(userId: number, refreshTokenHash: string) {
+    async saveRefreshToken(userId: string, refreshTokenHash: string) {
         await this.usersRepository.update(userId, { refreshToken: refreshTokenHash } as any);
     }
 }

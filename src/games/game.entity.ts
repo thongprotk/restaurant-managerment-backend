@@ -6,34 +6,33 @@ export class Game {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'varchar', length: 200 })
-    name: string;
+    @Index({ unique: true })
+    @Column({ unique: true })
+    game_id: string;
 
     @Index({ unique: true })
-    @Column({ type: 'varchar', length: 200, nullable: true })
-    slug?: string;
+    @Column({ type: 'varchar', length: 200 })
+    game_name: string;
 
-    @Column({ type: 'varchar', length: 200, nullable: true })
-    developer?: string;
+    @Index({ unique: true })
+    @Column({ type: 'varchar', length: 200 })
+    slug: string;
 
-    @Column({ type: 'jsonb', nullable: true })
-    platforms?: string[];
+    @Column({ nullable: true })
+    guide_img: string;
 
-    @Column({ type: 'text', nullable: true })
-    description?: string;
+    @Column({ nullable: true })
+    icon_img: string;
+
+    @Column({ default: 'text' })
+    list_package_type: string;
 
     @Column({ type: 'date', nullable: true })
-    releaseDate?: string;
+    releaseDate?: Date;
 
-    @Column({ type: 'jsonb', nullable: true })
-    metadata?: Record<string, any>;
-
-    @OneToMany(() => Issue, (issue) => issue.game)
-    issues: Issue[];
-
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 }

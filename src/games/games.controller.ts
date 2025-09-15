@@ -1,19 +1,30 @@
-import { Controller, Get, Post, Body, Param, Query, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch, Delete, UseGuards, BadGatewayException } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
+import { GamesService } from './games.service';
+import { Roles } from 'src/auth/roles.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Public } from 'src/auth/public.decorator';
 
 @Controller('games')
 export class GamesController {
-    @Get()
-    async findAll(@Query() query: any) {
-        // TODO: return paginated list of games, support search/filters
-        return { message: 'GET /games - list (skeleton)', query };
+    constructor(private readonly gamesService: GamesService) { }
+
+    @Get('getListGames')
+    @Public()
+    async findAll(@Query() query: any, limit?: number) {
+        if (query.limit) {
+            return this.gamesService.findAll(query.limit ? parseInt(query.limit) : 50);
+        }
+        return this.gamesService.findAll(limit || 50);
     }
 
-    @Post()
+    @Post('create')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles('admin')
     async create(@Body() dto: CreateGameDto) {
-        // TODO: create game
-        return { message: 'POST /games - create (skeleton)', dto };
+        return this.gamesService.create(dto);
     }
 
     @Get(':id')
@@ -22,15 +33,18 @@ export class GamesController {
         return { message: `GET /games/${id} - detail (skeleton)` };
     }
 
+
     @Patch(':id')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles('admin')
     async update(@Param('id') id: string, @Body() dto: UpdateGameDto) {
-        // TODO: update game
-        return { message: `PATCH /games/${id} - update (skeleton)`, dto };
+        if (!id) throw new BadGatewayException('Game ID is required');
+        return this.gamesService.update(id, dto);
     }
 
     @Delete(':id')
     async remove(@Param('id') id: string) {
-        // TODO: soft-delete or hard-delete based on policy
+        if (!id) throw new BadGatewayException('Game ID is required');
         return { message: `DELETE /games/${id} - remove (skeleton)` };
     }
 }

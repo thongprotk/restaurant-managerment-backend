@@ -4,7 +4,6 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/user.entity';
 import * as bcrypt from 'bcrypt';
 import { GoogleAuthDto } from './dto/google-auth.dto';
-import { access } from 'fs';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
